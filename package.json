@@ -1,0 +1,15 @@
+{
+  "name": "masterbus-spk",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Master SPK Creator dengan Firestore dan Storage melalui backend privat",
+  "engines": {
+    "node": ">=20.6"
+  },
+  "scripts": {
+    "start": "node --env-file=.env server.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^14.5.1"
+  }
+}
