@@ -375,8 +375,15 @@ const specGroups=[
 let drawingData='',spkData=[];
 function escapeHtml(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 async function apiRequest(path,options={}){
+ if(location.protocol==='file:')throw new Error('Aplikasi sedang dibuka melalui file://. Jalankan npm.cmd start, lalu buka http://localhost:3000.');
  let response;
- try{response=await fetch(path,options)}catch(error){throw new Error('Backend tidak terhubung. Jalankan server dengan npm start dan buka http://localhost:3000.')}
+ try{response=await fetch(path,options)}catch(error){throw new Error('Backend tidak terhubung. Jalankan npm.cmd start dan buka http://localhost:3000.')}
+ const contentType=response.headers.get('content-type')||'';
+ if(!contentType.toLowerCase().includes('application/json')){
+  const message=(await response.text()).trim();
+  if(response.status===403)throw new Error('Akses backend ditolak (403). Pastikan server dan IP Anda diizinkan oleh allowlist.');
+  throw new Error(`Backend mengirim respons non-JSON (${response.status}): ${message.slice(0,120)}`);
+ }
  const result=await response.json();
  if(!response.ok)throw new Error(result.error||`Permintaan gagal (${response.status}).`);
  return result;
