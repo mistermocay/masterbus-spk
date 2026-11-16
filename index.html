@@ -124,14 +124,30 @@
     .field textarea { min-height: 76px; resize: vertical; }
     .section-label { font-size: 12px; font-weight: 800; color: var(--blue); margin: 0 0 11px; }
     .spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    #standardSpecs { grid-template-columns: 1fr; gap: 13px; }
     .spec-card { border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
     .spec-card h4 { margin: 0; background: #edf4f4; color: #315867; padding: 11px 13px; font-size: 11px; letter-spacing: .4px; }
+    .spec-group-head { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 12px 14px; background: #f7f9fa; border-bottom: 1px solid var(--line); }
+    .spec-group-title { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .spec-group-mark { width: 31px; height: 31px; flex: 0 0 31px; display: grid; place-items: center; border-radius: 8px; background: var(--pale); color: var(--blue); font-size: 14px; }
+    .spec-group-head h4 { padding: 0; background: transparent; color: var(--navy); font-size: 12px; letter-spacing: .35px; }
+    .spec-group-head p { margin: 4px 0 0; color: var(--muted); font-size: 10px; }
+    .spec-add-btn { white-space: nowrap; border-color: #cbdde1; color: var(--blue); }
     .spec-table { width: 100%; border-collapse: collapse; font-size: 11px; }
     .spec-table th { background: #f5f8f9; color: #526477; text-align: left; font-weight: 700; }
     .spec-table th, .spec-table td { border: 1px solid #e5eaed; padding: 8px; }
     .spec-table input { width: 100%; border: 0; outline: 0; background: transparent; font-size: 11px; min-width: 0; color: var(--ink); }
     .spec-table input:focus { box-shadow: inset 0 -1px var(--blue2); }
     .spec-table .qty { width: 75px; }
+    .editable-spec-table { table-layout: fixed; }
+    .editable-spec-table th:first-child { width: 27%; }
+    .editable-spec-table th:nth-child(3) { width: 105px; }
+    .editable-spec-table th:last-child { width: 58px; }
+    .editable-spec-table td { padding: 6px; }
+    .editable-spec-table td input { min-height: 36px; border: 1px solid #d6dfe4; border-radius: 6px; background: #fff; padding: 8px 9px; font-size: 11px; }
+    .editable-spec-table td input:focus { border-color: var(--blue2); box-shadow: 0 0 0 2px #2592a51c; }
+    .remove-spec-btn { width: 29px; height: 29px; border: 1px solid #f0d7d7; border-radius: 6px; background: #fff; color: var(--red); font-size: 16px; line-height: 1; }
+    .remove-spec-btn:hover { background: #fff0f0; border-color: #e7bcbc; }
     .table-actions { padding: 9px 10px; display: flex; justify-content: flex-end; }
     .text-btn { border: 0; background: transparent; color: var(--blue); font-weight: 700; font-size: 11px; padding: 5px 7px; }
     .text-btn:hover { color: #0d4c61; text-decoration: underline; }
@@ -220,6 +236,9 @@
       .panel-title { align-items: flex-start; flex-wrap: wrap; }
       .panel-title .toolbar { flex-wrap: wrap; width: 100%; }
       .panel-title .toolbar .search { width: 100%; }
+      .spec-group-head { align-items: flex-start; flex-wrap: wrap; }
+      .spec-add-btn { margin-left: 41px; }
+      .editable-spec-table { min-width: 690px; }
       .print-sheet { padding: 24px 18px; }
       .identity-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .document-title h1 { font-size: 21px; }
@@ -308,7 +327,7 @@
           </div>
 
           <div class="panel">
-            <div class="panel-title"><h3>Spesifikasi Detail Pekerjaan</h3><span class="muted">Baris dapat ditambah atau diubah</span></div>
+            <div class="panel-title"><h3>Spesifikasi Detail Pekerjaan</h3><span class="muted">Ubah langsung kolomnya atau tambah item di kategori yang sesuai.</span></div>
             <div class="panel-body">
               <div class="spec-grid" id="standardSpecs"></div>
               <div class="field full" style="margin-top:18px">
@@ -369,13 +388,21 @@ function showPage(name){
 document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
 function renderSpecTables(){
  const host=document.getElementById('standardSpecs');host.innerHTML='';
- specGroups.forEach((g,gi)=>{
-  const split=Math.ceil(g.items.length/2),parts=gi===2?[g.items]:[g.items.slice(0,split),g.items.slice(split)];
-  const card=document.createElement('div');card.className='spec-card';
-  card.innerHTML=`<h4>${g.icon} &nbsp; ${g.title}</h4><div class="spec-grid" style="padding:0;gap:0">${parts.map((part,pi)=>`<div><table class="spec-table"><thead><tr><th>Item Pekerjaan</th><th>Spesifikasi</th><th class="qty">Qty</th></tr></thead><tbody>${part.map((it,ii)=>{const idx=gi+'_'+(pi===1?split+ii:ii);return `<tr><td><input aria-label="Item ${idx}" data-g="${gi}" data-i="${pi===1?split+ii:ii}" data-k="0" value="${escapeHtml(it[0])}"></td><td><input aria-label="Spesifikasi ${idx}" data-g="${gi}" data-i="${pi===1?split+ii:ii}" data-k="1" value="${escapeHtml(it[1])}"></td><td><input class="qty" aria-label="Qty ${idx}" data-g="${gi}" data-i="${pi===1?split+ii:ii}" data-k="2" value="${escapeHtml(it[2])}"></td></tr>`}).join('')}</tbody></table></div>`).join('')}</div>`;
+ specGroups.forEach(g=>{
+  const card=document.createElement('div');card.className='spec-card spec-group';card.dataset.title=g.title;
+  card.innerHTML=`<div class="spec-group-head"><div class="spec-group-title"><span class="spec-group-mark" aria-hidden="true">${escapeHtml(g.icon)}</span><div><h4>${escapeHtml(g.title)}</h4><p>Spesifikasi per item pekerjaan</p></div></div><button type="button" class="btn btn-light spec-add-btn" onclick="addSpecRow(this.closest('.spec-group'))">＋ Tambah item</button></div><div class="table-wrap"><table class="spec-table editable-spec-table"><thead><tr><th>Item Pekerjaan</th><th>Spesifikasi</th><th>Qty</th><th class="no-print">Aksi</th></tr></thead><tbody></tbody></table></div>`;
   host.appendChild(card);
+  g.items.forEach(item=>addSpecRow(card,item[0],item[1],item[2]));
  });
 }
+function addSpecRow(card,item='',spec='',qty=''){
+ if(!card)return;
+ const body=card.querySelector('tbody'),row=document.createElement('tr');
+ row.className='spec-item-row';
+ row.innerHTML=`<td><input data-k="0" aria-label="Item pekerjaan" placeholder="Contoh: Panel lantai" value="${escapeHtml(item)}"></td><td><input data-k="1" aria-label="Spesifikasi" placeholder="Detail bahan atau pekerjaan" value="${escapeHtml(spec)}"></td><td><input data-k="2" aria-label="Kuantitas" placeholder="Qty" value="${escapeHtml(qty)}"></td><td class="no-print"><button type="button" class="remove-spec-btn" aria-label="Hapus item pekerjaan" title="Hapus item" onclick="removeSpecRow(this)">×</button></td>`;
+ body.appendChild(row);
+}
+function removeSpecRow(button){button.closest('.spec-item-row').remove()}
 function addAdditionalRow(item='',spec='',qty=''){
  const body=document.getElementById('additionalRows'),n=body.children.length+1,tr=document.createElement('tr');
  tr.innerHTML=`<td>${n}</td><td><input placeholder="Item pekerjaan" value="${escapeHtml(item)}"></td><td><input placeholder="Detail spesifikasi" value="${escapeHtml(spec)}"></td><td><input class="qty" placeholder="Qty" value="${escapeHtml(qty)}"></td><td class="no-print"><button type="button" class="text-btn" aria-label="Hapus baris" onclick="this.closest('tr').remove();renumberAdditional()">✕</button></td>`;
@@ -383,7 +410,7 @@ function addAdditionalRow(item='',spec='',qty=''){
 }
 function renumberAdditional(){[...document.querySelectorAll('#additionalRows tr')].forEach((r,i)=>r.cells[0].textContent=i+1)}
 function readSpecs(){
- return specGroups.map((g,gi)=>({title:g.title,items:[...document.querySelectorAll(`[data-g="${gi}"][data-k="0"]`)].map(el=>{const i=el.dataset.i;return [el.value,document.querySelector(`[data-g="${gi}"][data-i="${i}"][data-k="1"]`).value,document.querySelector(`[data-g="${gi}"][data-i="${i}"][data-k="2"]`).value]})}));
+ return [...document.querySelectorAll('.spec-group')].map(card=>({title:card.dataset.title,items:[...card.querySelectorAll('.spec-item-row')].map(row=>[...row.querySelectorAll('input')].map(input=>input.value.trim())).filter(item=>item.some(Boolean))}));
 }
 function readAdditional(){return [...document.querySelectorAll('#additionalRows tr')].map(r=>[r.cells[1].querySelector('input').value,r.cells[2].querySelector('input').value,r.cells[3].querySelector('input').value]).filter(a=>a.some(Boolean))}
 document.getElementById('drawingFile').addEventListener('change',e=>{
