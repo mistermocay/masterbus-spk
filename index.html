@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b2d55">
+  <title>Master SPK Creator</title>
+  <style>
+    :root{
+      --navy:#0b2d55;--blue:#075ca8;--blue2:#1689df;--pale:#eaf4ff;
+      --line:#d8e3ef;--ink:#1c2b3a;--muted:#6b7b8c;--bg:#f3f6fa;
+      --white:#fff;--green:#16845b;--red:#c44747;--shadow:0 8px 24px rgba(18,49,80,.08)
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--ink)}
+    button,input,select,textarea{font:inherit}
+    button{cursor:pointer}
+    .app{min-height:100vh;display:grid;grid-template-columns:250px 1fr}
+    aside{background:linear-gradient(180deg,#092747,#0c3e70);color:#fff;padding:25px 17px;display:flex;flex-direction:column;gap:28px}
+    .brand{display:flex;align-items:center;gap:11px;padding:4px 8px 20px;border-bottom:1px solid #ffffff26}
+    .brand-mark{width:42px;height:42px;border-radius:12px;background:#fff;color:var(--navy);display:grid;place-items:center;font-weight:900;font-size:18px}
+    .brand strong{display:block;font-size:14px;letter-spacing:.3px}.brand small{display:block;color:#c6d8e9;font-size:10px;margin-top:4px}
+    nav{display:grid;gap:8px}
+    .nav-btn{border:0;background:transparent;color:#d8e7f5;text-align:left;padding:12px 13px;border-radius:9px;display:flex;align-items:center;gap:12px;font-weight:600}
+    .nav-btn.active,.nav-btn:hover{background:#ffffff1b;color:#fff}
+    .nav-icon{width:20px;text-align:center;font-size:17px}
+    .side-note{margin-top:auto;color:#b9cde0;font-size:11px;line-height:1.6;padding:12px}
+    main{min-width:0}
+    header{height:76px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 34px;position:sticky;top:0;z-index:5}
+    header h1{font-size:18px;margin:0;color:var(--navy)}header p{margin:4px 0 0;color:var(--muted);font-size:12px}
+    .user-pill{background:var(--pale);color:var(--blue);padding:9px 13px;border-radius:20px;font-size:12px;font-weight:700}
+    .content{padding:28px 34px 50px;max-width:1500px;margin:auto}
+    .page{display:none}.page.active{display:block}
+    .page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;margin-bottom:22px}
+    .page-head h2{margin:0;color:var(--navy);font-size:23px}.page-head p{margin:7px 0 0;color:var(--muted);font-size:13px}
+    .btn{border:0;border-radius:8px;padding:10px 15px;font-weight:700;font-size:12px;display:inline-flex;align-items:center;gap:8px}
+    .btn-primary{background:var(--blue);color:#fff}.btn-primary:hover{background:#064b89}
+    .btn-light{background:#edf4fb;color:var(--navy);border:1px solid var(--line)}
+    .btn-danger{background:#fff0f0;color:var(--red);border:1px solid #f2d2d2}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:22px}
+    .stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;box-shadow:var(--shadow)}
+    .stat span{font-size:12px;color:var(--muted)}.stat strong{display:block;font-size:27px;color:var(--navy);margin-top:8px}
+    .panel{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);margin-bottom:18px;overflow:hidden}
+    .panel-title{padding:15px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .panel-title h3{font-size:14px;color:var(--navy);margin:0}.panel-body{padding:18px}
+    .form-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+    .field{display:flex;flex-direction:column;gap:6px}.field label{font-size:11px;font-weight:700;color:#526477}
+    .field input,.field select,.field textarea,.search{border:1px solid #ccd8e4;border-radius:7px;padding:10px 11px;background:#fff;color:var(--ink);outline:none;width:100%;font-size:12px}
+    .field input:focus,.field select:focus,.field textarea:focus,.search:focus{border-color:var(--blue2);box-shadow:0 0 0 3px #1689df18}
+    .field textarea{min-height:65px;resize:vertical}
+    .section-label{font-size:13px;font-weight:800;color:var(--blue);margin:0 0 11px}
+    .spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+    .spec-card{border:1px solid var(--line);border-radius:9px;overflow:hidden}
+    .spec-card h4{margin:0;background:linear-gradient(90deg,#0c5798,#1689df);color:#fff;padding:10px 12px;font-size:12px}
+    .spec-table{width:100%;border-collapse:collapse;font-size:11px}
+    .spec-table th{background:#eaf4ff;color:#244866;text-align:left}
+    .spec-table th,.spec-table td{border:1px solid #d9e3ed;padding:7px 8px}
+    .spec-table input{width:100%;border:0;outline:0;background:transparent;font-size:11px;min-width:0}
+    .spec-table .qty{width:75px}
+    .table-actions{padding:8px;display:flex;justify-content:flex-end}
+    .text-btn{border:0;background:transparent;color:var(--blue);font-weight:700;font-size:11px}
+    .full{grid-column:1/-1}
+    .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .toolbar .search{max-width:300px}
+    .list-table{width:100%;border-collapse:collapse;font-size:12px}
+    .list-table th{background:#f0f6fc;color:#526477;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.5px}
+    .list-table th,.list-table td{padding:13px 15px;border-bottom:1px solid #e7edf3}
+    .list-table tr:last-child td{border-bottom:0}
+    .status{display:inline-block;padding:5px 8px;border-radius:20px;background:#eaf7f1;color:var(--green);font-size:10px;font-weight:800}
+    .empty{text-align:center;color:var(--muted);padding:35px 15px;font-size:13px}
+    .muted{color:var(--muted);font-size:11px;line-height:1.5}
+    .form-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:18px}
+    .form-footer .right{display:flex;gap:9px}
+    .drawing-box{border:1.5px dashed #a9c5df;border-radius:9px;background:#f8fbff;min-height:115px;display:grid;place-items:center;text-align:center;color:#7891a9;font-size:12px;padding:18px}
+    .drawing-box input{max-width:230px;margin-top:10px;font-size:11px}
+    .drawing-preview{max-width:100%;max-height:260px;object-fit:contain;display:none;margin:0 auto 10px}
+    .toast{position:fixed;right:22px;bottom:22px;background:#123b60;color:#fff;padding:12px 17px;border-radius:9px;box-shadow:var(--shadow);font-size:12px;display:none;z-index:10}
+    @media(max-width:900px){.app{grid-template-columns:1fr}aside{padding:12px 15px;gap:10px}.brand{padding:0 5px 10px}.brand-mark{width:34px;height:34px}nav{grid-template-columns:repeat(2,1fr)}.side-note{display:none}header{height:65px;padding:0 18px}.content{padding:22px 16px}.form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:600px){.stats{grid-template-columns:1fr}.form-grid,.spec-grid{grid-template-columns:1fr}.page-head{flex-direction:column}.list-table{min-width:650px}.table-wrap{overflow-x:auto}.form-footer{align-items:flex-start;flex-direction:column}.form-footer .right{width:100%}.form-footer .btn{flex:1;justify-content:center}}
+    @media print{aside,header,.no-print,.page-head,.toast{display:none!important}.app{display:block}.content{padding:0;max-width:none}.page{display:none!important}#previewPage{display:block!important}.panel{box-shadow:none;break-inside:avoid}.print-sheet{padding:12mm;color:#111}.print-sheet h1{text-align:center;color:#0b2d55}.print-sheet table{font-size:10px}.print-sheet th,.print-sheet td{border:1px solid #777;padding:5px}.print-sheet .spec-grid{gap:8px}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="brand">
+      <div class="brand-mark">MAK</div>
+      <div><strong>MASTER SPK CREATOR</strong><small>PT MASTER ARTHA KHARISMA</small></div>
+    </div>
+    <nav>
+      <button class="nav-btn active" data-page="dashboard"><span class="nav-icon">▦</span> Dashboard</button>
+      <button class="nav-btn" data-page="creator"><span class="nav-icon">＋</span> SPK Creator</button>
+      <button class="nav-btn" data-page="list"><span class="nav-icon">☷</span> Daftar SPK</button>
+    </nav>
+    <div class="side-note">Sistem pembuatan dan pengelolaan Surat Perintah Kerja produksi karoseri.</div>
+  </aside>
+
+  <main>
+    <header>
+      <div><h1 id="topTitle">Dashboard</h1><p>Production Order Management</p></div>
+      <div class="user-pill">DIVISI BUS</div>
+    </header>
+
+    <div class="content">
+      <section class="page active" id="dashboardPage">
+        <div class="page-head"><div><h2>Dashboard</h2><p>Ringkasan dokumen SPK yang telah dibuat.</p></div><button class="btn btn-primary" onclick="showPage('creator')">＋ Buat SPK Baru</button></div>
+        <div class="stats">
+          <div class="stat"><span>Total SPK Tersimpan</span><strong id="totalCount">0</strong></div>
+          <div class="stat"><span>SPK Bulan Ini</span><strong id="monthCount">0</strong></div>
+          <div class="stat"><span>SPK Terakhir Dibuat</span><strong id="lastDate">-</strong></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title"><h3>SPK Terbaru</h3><button class="text-btn" onclick="showPage('list')">Lihat semua →</button></div>
+          <div class="table-wrap"><table class="list-table"><thead><tr><th>No. SPK</th><th>Customer</th><th>Jenis Unit</th><th>Tanggal Masuk</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="recentRows"></tbody></table></div>
+          <div class="empty" id="recentEmpty">Belum ada SPK. Mulai dengan membuat SPK pertama.</div>
+        </div>
+      </section>
+
+      <section class="page" id="creatorPage">
+        <div class="page-head"><div><h2>SPK Creator</h2><p>Isi identitas unit dan spesifikasi pekerjaan produksi.</p></div><button class="btn btn-light" onclick="showPage('list')">← Kembali ke Daftar SPK</button></div>
+        <form id="spkForm">
+          <div class="panel">
+            <div class="panel-title"><h3>Identitas Unit</h3></div>
+            <div class="panel-body form-grid">
+              <div class="field"><label>Nama Customer *</label><input id="customer" required placeholder="Nama customer"></div>
+              <div class="field"><label>Jenis Unit *</label><input id="unitType" required placeholder="Contoh: Bus Penumpang"></div>
+              <div class="field"><label>Kapasitas</label><input id="capacity" placeholder="Contoh: 60 Seat"></div>
+              <div class="field"><label>No. Chassis</label><input id="chassis" placeholder="Nomor chassis"></div>
+              <div class="field"><label>No. SO</label><input id="so" placeholder="Nomor Sales Order"></div>
+              <div class="field"><label>Tanggal Masuk *</label><input id="entryDate" type="date" required></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title"><h3>Gambar Teknik / Layout Unit</h3><span class="muted">Opsional — unggah gambar dari Engineering</span></div>
+            <div class="panel-body">
+              <div class="drawing-box">
+                <div><img id="drawingPreview" class="drawing-preview" alt="Preview gambar teknik"><div id="drawingHint">▧<br><strong>Belum ada gambar teknik</strong><br>Format JPG, PNG, atau WebP</div><input type="file" id="drawingFile" accept="image/*"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title"><h3>Spesifikasi Detail Pekerjaan</h3><span class="muted">Baris dapat ditambah atau diubah</span></div>
+            <div class="panel-body">
+              <div class="spec-grid" id="standardSpecs"></div>
+              <div class="field full" style="margin-top:18px">
+                <div class="section-label">Spesifikasi Tambahan (Optional)</div>
+                <div class="table-wrap"><table class="spec-table" id="additionalTable"><thead><tr><th style="width:35px">No.</th><th>Item Pekerjaan</th><th>Spesifikasi</th><th style="width:75px">Qty</th><th class="no-print" style="width:45px">Aksi</th></tr></thead><tbody id="additionalRows"></tbody></table></div>
+                <div class="table-actions"><button type="button" class="text-btn" onclick="addAdditionalRow()">＋ Tambah spesifikasi</button></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title"><h3>Catatan / Instruksi Khusus</h3></div>
+            <div class="panel-body"><div class="field"><label>Catatan untuk Produksi</label><textarea id="notes" placeholder="Tuliskan instruksi khusus, catatan Engineering, atau hal yang perlu diperhatikan produksi..."></textarea></div></div>
+          </div>
+          <div class="form-footer no-print"><span class="muted">* Wajib diisi. Data awal disimpan pada browser perangkat ini (localStorage).</span><div class="right"><button type="button" class="btn btn-light" onclick="resetForm()">Reset Form</button><button type="submit" class="btn btn-primary">Simpan SPK</button></div></div>
+        </form>
+      </section>
+
+      <section class="page" id="listPage">
+        <div class="page-head"><div><h2>Daftar SPK</h2><p>Semua SPK yang pernah dibuat melalui perangkat ini.</p></div><button class="btn btn-primary" onclick="showPage('creator')">＋ Buat SPK Baru</button></div>
+        <div class="panel">
+          <div class="panel-title"><h3>Database SPK</h3><div class="toolbar"><input class="search" id="searchInput" placeholder="Cari customer, SO, chassis..."><button class="btn btn-light" onclick="exportData()">Ekspor JSON</button></div></div>
+          <div class="table-wrap"><table class="list-table"><thead><tr><th>No.</th><th>Customer</th><th>Jenis Unit</th><th>No. SO</th><th>No. Chassis</th><th>Tanggal Masuk</th><th>Aksi</th></tr></thead><tbody id="allRows"></tbody></table></div>
+          <div class="empty" id="listEmpty">Belum ada data SPK tersimpan.</div>
+        </div>
+      </section>
+
+      <section class="page" id="previewPage">
+        <div class="page-head no-print"><div><h2>Preview SPK</h2><p>Pratinjau dokumen sebelum dicetak.</p></div><div class="toolbar"><button class="btn btn-light" onclick="showPage('list')">← Kembali</button><button class="btn btn-primary" onclick="window.print()">Cetak / Simpan PDF</button></div></div>
+        <div class="panel print-sheet" id="previewContent"></div>
+      </section>
+    </div>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY='master_spk_creator_v1';
+const specGroups=[
+ {title:'EXTERIOR / BODY',icon:'▣',items:[
+  ['Rangka / Body','Pipa Baja / Plat Galvanil','1 set'],['Lantai','Plat 2 mm','1 set'],['Pintu Penumpang','2 pintu penumpang','2 pcs'],['Pintu Darurat','1 pintu darurat di sisi kanan','1 pcs'],['Pintu Sopir','Orisinil chassis','-'],['Peredam Body','Polyurethane (PU)','1 set'],['Lampu Depan','Original chassis','-'],['Lampu Belakang','Standart karoseri','1 set'],['Kaca Depan','Orisinil chassis','-'],['Kaca Samping','Bawah blok mati, atas geser, warna dark grey','1 set'],['Bagasi Samping','Ada','1 set'],['Topi Cabin','Ada','1 pcs'],['Pengecatan','Cat solid / logo letter sesuai permintaan','1 set']]},
+ {title:'INTERIOR',icon:'▤',items:[
+  ['Bangku Depan','Orisinil chassis + Asisten Driver','1 set'],['Bangku Penumpang','60 seat, cover Oscar','60 pcs'],['Safety Belt','Sabuk keselamatan 2 titik','60 set'],['Karpet Lantai','Bordes Aluminium','1 set'],['Plafon','ABS polos','1 set'],['Ducting AC','Plat cover vinyl','1 set'],['Lampu Plafon','LED','1 set'],['Dek Pintu & Interior','ABS kombinasi vinyl','1 set'],['Warna Interior','Abu-abu / krem','1 set'],['Pegangan Stainless','1 lajur di plafon','1 lajur'],['Handgrip','Ada','1 set'],['Jam Digital','Ada','1 pcs'],['Lampu Rotary Bulat','2 pcs','2 pcs'],['Emergency Exit + Fan','2 pcs','2 pcs'],['Audio','Tape orisinil + speaker','1 set'],['Louvre AC','Standart karoseri','1 set'],['AC','Denso LD 9','1 set'],['APAR','APAR 6 Kg','1 pcs'],['Radio Rig','Radio Rig','1 pcs']]},
+ {title:'ELEKTRIK',icon:'ϟ',items:[['Elektrikal Audio','Pemasangan kembali elektrikal audio bawaan unit','1 set']]}
+];
+let drawingData='';
+function escapeHtml(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function getData(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]')}catch(e){return []}}
+function setData(data){localStorage.setItem(STORAGE_KEY,JSON.stringify(data))}
+function showPage(name){
+ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+ document.getElementById(name+'Page').classList.add('active');
+ document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.page===name));
+ const titles={dashboard:'Dashboard',creator:'SPK Creator',list:'Daftar SPK',preview:'Preview SPK'};
+ document.getElementById('topTitle').textContent=titles[name]||'Master SPK Creator';
+ if(name==='dashboard'||name==='list')renderLists();
+}
+document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+function renderSpecTables(){
+ const host=document.getElementById('standardSpecs');host.innerHTML='';
+ specGroups.forEach((g,gi)=>{
+  const split=Math.ceil(g.items.length/2),parts=gi===2?[g.items]:[g.items.slice(0,split),g.items.slice(split)];
+  const card=document.createElement('div');card.className='spec-card';
+  card.innerHTML=`<h4>${g.icon} &nbsp; ${g.title}</h4><div class="spec-grid" style="padding:0;gap:0">${parts.map((part,pi)=>`<div><table class="spec-table"><thead><tr><th>Item Pekerjaan</th><th>Spesifikasi</th><th class="qty">Qty</th></tr></thead><tbody>${part.map((it,ii)=>{const idx=gi+'_'+(pi===1?split+ii:ii);return `<tr><td><input aria-label="Item ${idx}" data-g="${gi}" data-i="${pi===1?split+ii:ii}" data-k="0" value="${escapeHtml(it[0])}"></td><td><input aria-label="Spesifikasi ${idx}" data-g="${gi}" data-i="${pi===1?split+ii:ii}" data-k="1" value="${escapeHtml(it[1])}"></td><td><input class="qty" aria-label="Qty ${idx}" data-g="${gi}" data-i="${pi===1?split+ii:ii}" data-k="2" value="${escapeHtml(it[2])}"></td></tr>`}).join('')}</tbody></table></div>`).join('')}</div>`;
+  host.appendChild(card);
+ });
+}
+function addAdditionalRow(item='',spec='',qty=''){
+ const body=document.getElementById('additionalRows'),n=body.children.length+1,tr=document.createElement('tr');
+ tr.innerHTML=`<td>${n}</td><td><input placeholder="Item pekerjaan" value="${escapeHtml(item)}"></td><td><input placeholder="Detail spesifikasi" value="${escapeHtml(spec)}"></td><td><input class="qty" placeholder="Qty" value="${escapeHtml(qty)}"></td><td class="no-print"><button type="button" class="text-btn" aria-label="Hapus baris" onclick="this.closest('tr').remove();renumberAdditional()">✕</button></td>`;
+ body.appendChild(tr);
+}
+function renumberAdditional(){[...document.querySelectorAll('#additionalRows tr')].forEach((r,i)=>r.cells[0].textContent=i+1)}
+function readSpecs(){
+ return specGroups.map((g,gi)=>({title:g.title,items:[...document.querySelectorAll(`[data-g="${gi}"][data-k="0"]`)].map(el=>{const i=el.dataset.i;return [el.value,document.querySelector(`[data-g="${gi}"][data-i="${i}"][data-k="1"]`).value,document.querySelector(`[data-g="${gi}"][data-i="${i}"][data-k="2"]`).value]})}));
+}
+function readAdditional(){return [...document.querySelectorAll('#additionalRows tr')].map(r=>[r.cells[1].querySelector('input').value,r.cells[2].querySelector('input').value,r.cells[3].querySelector('input').value]).filter(a=>a.some(Boolean))}
+document.getElementById('drawingFile').addEventListener('change',e=>{
+ const file=e.target.files[0];if(!file)return;
+ if(file.size>2*1024*1024){notify('Ukuran gambar maksimal 2 MB untuk penyimpanan browser.');e.target.value='';return}
+ const reader=new FileReader();reader.onload=()=>{drawingData=reader.result;const img=document.getElementById('drawingPreview');img.src=drawingData;img.style.display='block';document.getElementById('drawingHint').style.display='none'};reader.readAsDataURL(file);
+});
+document.getElementById('spkForm').addEventListener('submit',e=>{
+ e.preventDefault();
+ const nextNo=getData().length+1;const spkNo='SPK/MAK/'+new Date().getFullYear()+'/'+String(nextNo).padStart(3,'0');
+ const data={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),spkNo,customer:val('customer'),unitType:val('unitType'),capacity:val('capacity'),chassis:val('chassis'),so:val('so'),entryDate:val('entryDate'),drawing:drawingData,groups:readSpecs(),additional:readAdditional(),notes:val('notes'),createdAt:new Date().toISOString()};
+ const all=getData();all.unshift(data);setData(all);notify('SPK berhasil disimpan.');resetForm();renderLists();showPage('list');
+});
+function val(id){return document.getElementById(id).value.trim()}
+function resetForm(){document.getElementById('spkForm').reset();drawingData='';document.getElementById('drawingPreview').style.display='none';document.getElementById('drawingHint').style.display='block';document.getElementById('additionalRows').innerHTML='';addAdditionalRow();renderSpecTables()}
+function renderLists(){
+ const data=getData(),month=new Date().toISOString().slice(0,7);
+ document.getElementById('totalCount').textContent=data.length;
+ document.getElementById('monthCount').textContent=data.filter(x=>(x.createdAt||'').slice(0,7)===month).length;
+ document.getElementById('lastDate').textContent=data[0]?formatDate(data[0].createdAt.slice(0,10)):'-';
+ const recent=document.getElementById('recentRows'),all=document.getElementById('allRows');
+ recent.innerHTML=data.slice(0,5).map(row=>rowHtml(row,false)).join('');all.innerHTML=data.map(row=>rowHtml(row,true)).join('');
+ document.getElementById('recentEmpty').style.display=data.length?'none':'block';document.getElementById('listEmpty').style.display=data.length?'none':'block';
+}
+function rowHtml(x,full){return `<tr>${full?`<td>${escapeHtml(x.spkNo||'-')}</td>`:''}<td><strong>${escapeHtml(x.customer)}</strong></td><td>${escapeHtml(x.unitType)}</td>${full?`<td>${escapeHtml(x.so||'-')}</td><td>${escapeHtml(x.chassis||'-')}</td>`:''}<td>${formatDate(x.entryDate)}</td>${full?'':'<td><span class="status">Tersimpan</span></td>'}<td><div class="toolbar"><button class="text-btn" onclick="previewSPK('${x.id}')">Lihat</button><button class="text-btn" onclick="deleteSPK('${x.id}')">Hapus</button></div></td></tr>`}
+function formatDate(s){if(!s)return '-';const [y,m,d]=s.split('-');return `${d}/${m}/${y}`}
+function deleteSPK(id){if(!confirm('Hapus SPK ini dari penyimpanan browser?'))return;setData(getData().filter(x=>x.id!==id));renderLists();notify('SPK dihapus.')}
+document.getElementById('searchInput').addEventListener('input',e=>{
+ const q=e.target.value.toLowerCase();const data=getData().filter(x=>[x.customer,x.unitType,x.so,x.chassis].join(' ').toLowerCase().includes(q));
+ document.getElementById('allRows').innerHTML=data.map(x=>rowHtml(x,true)).join('');document.getElementById('listEmpty').style.display=data.length?'none':'block';
+});
+function previewSPK(id){
+ const x=getData().find(a=>a.id===id);if(!x)return;
+ const groupHtml=x.groups.map(g=>`<div class="spec-card"><h4>${escapeHtml(g.title)}</h4><table class="spec-table"><thead><tr><th>Item Pekerjaan</th><th>Spesifikasi</th><th>Qty</th></tr></thead><tbody>${g.items.map(a=>`<tr><td>${escapeHtml(a[0])}</td><td>${escapeHtml(a[1])}</td><td>${escapeHtml(a[2])}</td></tr>`).join('')}</tbody></table></div>`).join('');
+ document.getElementById('previewContent').innerHTML=`<h1>SURAT PERINTAH KERJA (SPK)</h1><p style="text-align:center">PT MASTER ARTHA KHARISMA — DIVISI BUS</p><p style="text-align:center"><strong>No. SPK: ${escapeHtml(x.spkNo||'-')}</strong></p><hr><h3>IDENTITAS UNIT</h3><table class="list-table"><tbody><tr><th>Nama Customer</th><td>${escapeHtml(x.customer)}</td><th>Jenis Unit</th><td>${escapeHtml(x.unitType)}</td></tr><tr><th>Kapasitas</th><td>${escapeHtml(x.capacity||'-')}</td><th>No. Chassis</th><td>${escapeHtml(x.chassis||'-')}</td></tr><tr><th>No. SO</th><td>${escapeHtml(x.so||'-')}</td><th>Tanggal Masuk</th><td>${formatDate(x.entryDate)}</td></tr></tbody></table><h3>GAMBAR TEKNIK / LAYOUT UNIT</h3>${x.drawing?`<img src="${x.drawing}" style="width:100%;max-height:240px;object-fit:contain">`:'<div class="drawing-box">Gambar teknik / layout unit</div>'}<h3>SPESIFIKASI DETAIL PEKERJAAN</h3><div class="spec-grid">${groupHtml}</div>${x.additional.length?`<h3>SPESIFIKASI TAMBAHAN</h3><table class="spec-table"><thead><tr><th>Item Pekerjaan</th><th>Spesifikasi</th><th>Qty</th></tr></thead><tbody>${x.additional.map(a=>`<tr><td>${escapeHtml(a[0])}</td><td>${escapeHtml(a[1])}</td><td>${escapeHtml(a[2])}</td></tr>`).join('')}</tbody></table>`:''}<h3>CATATAN / INSTRUKSI KHUSUS</h3><p>${escapeHtml(x.notes||'-')}</p><br><div style="text-align:right;margin-top:35px">Disetujui oleh,<br><br><br>( ........................................ )</div>`;
+ showPage('preview');
+}
+function exportData(){const blob=new Blob([JSON.stringify(getData(),null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='master-spk-data.json';a.click();URL.revokeObjectURL(url)}
+function notify(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';setTimeout(()=>t.style.display='none',2600)}
+document.getElementById('entryDate').value=new Date().toISOString().slice(0,10);
+renderSpecTables();addAdditionalRow();renderLists();
+</script>
+</body>
+</html>
