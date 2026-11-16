@@ -6,78 +6,245 @@
   <meta name="theme-color" content="#0b2d55">
   <title>Master SPK Creator</title>
   <style>
-    :root{
-      --navy:#0b2d55;--blue:#075ca8;--blue2:#1689df;--pale:#eaf4ff;
-      --line:#d8e3ef;--ink:#1c2b3a;--muted:#6b7b8c;--bg:#f3f6fa;
-      --white:#fff;--green:#16845b;--red:#c44747;--shadow:0 8px 24px rgba(18,49,80,.08)
+    :root {
+      --navy: #102b46;
+      --navy-deep: #0a2037;
+      --blue: #176b87;
+      --blue2: #2592a5;
+      --pale: #eaf3f3;
+      --line: #e1e7eb;
+      --ink: #263746;
+      --muted: #748391;
+      --bg: #f4f6f7;
+      --white: #fff;
+      --green: #237b60;
+      --red: #bd4d4d;
+      --amber: #e6a14a;
+      --shadow: 0 10px 30px rgba(20, 42, 61, .055);
     }
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--ink)}
-    button,input,select,textarea{font:inherit}
-    button{cursor:pointer}
-    .app{min-height:100vh;display:grid;grid-template-columns:250px 1fr}
-    aside{background:linear-gradient(180deg,#092747,#0c3e70);color:#fff;padding:25px 17px;display:flex;flex-direction:column;gap:28px}
-    .brand{display:flex;align-items:center;gap:11px;padding:4px 8px 20px;border-bottom:1px solid #ffffff26}
-    .brand-mark{width:42px;height:42px;border-radius:12px;background:#fff;color:var(--navy);display:grid;place-items:center;font-weight:900;font-size:18px}
-    .brand strong{display:block;font-size:14px;letter-spacing:.3px}.brand small{display:block;color:#c6d8e9;font-size:10px;margin-top:4px}
-    nav{display:grid;gap:8px}
-    .nav-btn{border:0;background:transparent;color:#d8e7f5;text-align:left;padding:12px 13px;border-radius:9px;display:flex;align-items:center;gap:12px;font-weight:600}
-    .nav-btn.active,.nav-btn:hover{background:#ffffff1b;color:#fff}
-    .nav-icon{width:20px;text-align:center;font-size:17px}
-    .side-note{margin-top:auto;color:#b9cde0;font-size:11px;line-height:1.6;padding:12px}
-    main{min-width:0}
-    header{height:76px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 34px;position:sticky;top:0;z-index:5}
-    header h1{font-size:18px;margin:0;color:var(--navy)}header p{margin:4px 0 0;color:var(--muted);font-size:12px}
-    .user-pill{background:var(--pale);color:var(--blue);padding:9px 13px;border-radius:20px;font-size:12px;font-weight:700}
-    .content{padding:28px 34px 50px;max-width:1500px;margin:auto}
-    .page{display:none}.page.active{display:block}
-    .page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;margin-bottom:22px}
-    .page-head h2{margin:0;color:var(--navy);font-size:23px}.page-head p{margin:7px 0 0;color:var(--muted);font-size:13px}
-    .btn{border:0;border-radius:8px;padding:10px 15px;font-weight:700;font-size:12px;display:inline-flex;align-items:center;gap:8px}
-    .btn-primary{background:var(--blue);color:#fff}.btn-primary:hover{background:#064b89}
-    .btn-light{background:#edf4fb;color:var(--navy);border:1px solid var(--line)}
-    .btn-danger{background:#fff0f0;color:var(--red);border:1px solid #f2d2d2}
-    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:22px}
-    .stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;box-shadow:var(--shadow)}
-    .stat span{font-size:12px;color:var(--muted)}.stat strong{display:block;font-size:27px;color:var(--navy);margin-top:8px}
-    .panel{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);margin-bottom:18px;overflow:hidden}
-    .panel-title{padding:15px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}
-    .panel-title h3{font-size:14px;color:var(--navy);margin:0}.panel-body{padding:18px}
-    .form-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-    .field{display:flex;flex-direction:column;gap:6px}.field label{font-size:11px;font-weight:700;color:#526477}
-    .field input,.field select,.field textarea,.search{border:1px solid #ccd8e4;border-radius:7px;padding:10px 11px;background:#fff;color:var(--ink);outline:none;width:100%;font-size:12px}
-    .field input:focus,.field select:focus,.field textarea:focus,.search:focus{border-color:var(--blue2);box-shadow:0 0 0 3px #1689df18}
-    .field textarea{min-height:65px;resize:vertical}
-    .section-label{font-size:13px;font-weight:800;color:var(--blue);margin:0 0 11px}
-    .spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
-    .spec-card{border:1px solid var(--line);border-radius:9px;overflow:hidden}
-    .spec-card h4{margin:0;background:linear-gradient(90deg,#0c5798,#1689df);color:#fff;padding:10px 12px;font-size:12px}
-    .spec-table{width:100%;border-collapse:collapse;font-size:11px}
-    .spec-table th{background:#eaf4ff;color:#244866;text-align:left}
-    .spec-table th,.spec-table td{border:1px solid #d9e3ed;padding:7px 8px}
-    .spec-table input{width:100%;border:0;outline:0;background:transparent;font-size:11px;min-width:0}
-    .spec-table .qty{width:75px}
-    .table-actions{padding:8px;display:flex;justify-content:flex-end}
-    .text-btn{border:0;background:transparent;color:var(--blue);font-weight:700;font-size:11px}
-    .full{grid-column:1/-1}
-    .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    .toolbar .search{max-width:300px}
-    .list-table{width:100%;border-collapse:collapse;font-size:12px}
-    .list-table th{background:#f0f6fc;color:#526477;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.5px}
-    .list-table th,.list-table td{padding:13px 15px;border-bottom:1px solid #e7edf3}
-    .list-table tr:last-child td{border-bottom:0}
-    .status{display:inline-block;padding:5px 8px;border-radius:20px;background:#eaf7f1;color:var(--green);font-size:10px;font-weight:800}
-    .empty{text-align:center;color:var(--muted);padding:35px 15px;font-size:13px}
-    .muted{color:var(--muted);font-size:11px;line-height:1.5}
-    .form-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:18px}
-    .form-footer .right{display:flex;gap:9px}
-    .drawing-box{border:1.5px dashed #a9c5df;border-radius:9px;background:#f8fbff;min-height:115px;display:grid;place-items:center;text-align:center;color:#7891a9;font-size:12px;padding:18px}
-    .drawing-box input{max-width:230px;margin-top:10px;font-size:11px}
-    .drawing-preview{max-width:100%;max-height:260px;object-fit:contain;display:none;margin:0 auto 10px}
-    .toast{position:fixed;right:22px;bottom:22px;background:#123b60;color:#fff;padding:12px 17px;border-radius:9px;box-shadow:var(--shadow);font-size:12px;display:none;z-index:10}
-    @media(max-width:900px){.app{grid-template-columns:1fr}aside{padding:12px 15px;gap:10px}.brand{padding:0 5px 10px}.brand-mark{width:34px;height:34px}nav{grid-template-columns:repeat(2,1fr)}.side-note{display:none}header{height:65px;padding:0 18px}.content{padding:22px 16px}.form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-    @media(max-width:600px){.stats{grid-template-columns:1fr}.form-grid,.spec-grid{grid-template-columns:1fr}.page-head{flex-direction:column}.list-table{min-width:650px}.table-wrap{overflow-x:auto}.form-footer{align-items:flex-start;flex-direction:column}.form-footer .right{width:100%}.form-footer .btn{flex:1;justify-content:center}}
-    @media print{aside,header,.no-print,.page-head,.toast{display:none!important}.app{display:block}.content{padding:0;max-width:none}.page{display:none!important}#previewPage{display:block!important}.panel{box-shadow:none;break-inside:avoid}.print-sheet{padding:12mm;color:#111}.print-sheet h1{text-align:center;color:#0b2d55}.print-sheet table{font-size:10px}.print-sheet th,.print-sheet td{border:1px solid #777;padding:5px}.print-sheet .spec-grid{gap:8px}}
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); font-family: Inter, "Segoe UI", Arial, sans-serif; color: var(--ink); }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .app { min-height: 100vh; display: grid; grid-template-columns: 258px minmax(0, 1fr); }
+    aside {
+      position: sticky; top: 0; height: 100vh; background: var(--navy-deep); color: #fff;
+      padding: 27px 18px 20px; display: flex; flex-direction: column; gap: 34px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; padding: 2px 7px 22px; border-bottom: 1px solid #ffffff20; }
+    .brand-mark {
+      width: 43px; height: 43px; border-radius: 13px; background: #d7eee9; color: var(--navy-deep);
+      display: grid; place-items: center; font-weight: 900; font-size: 15px; letter-spacing: -.5px;
+    }
+    .brand strong { display: block; font-size: 12px; letter-spacing: .75px; }
+    .brand small { display: block; color: #a9bdcb; font-size: 9px; letter-spacing: .3px; margin-top: 6px; }
+    nav { display: grid; gap: 7px; }
+    .nav-btn {
+      border: 0; background: transparent; color: #aebfcb; text-align: left; padding: 12px 13px;
+      border-radius: 9px; display: flex; align-items: center; gap: 12px; font-size: 12px; font-weight: 600;
+      transition: background .18s ease, color .18s ease;
+    }
+    .nav-btn.active, .nav-btn:hover { background: #ffffff12; color: #fff; }
+    .nav-btn.active { box-shadow: inset 3px 0 var(--amber); }
+    .nav-icon { width: 20px; text-align: center; font-size: 16px; }
+    .side-note {
+      margin-top: auto; color: #9db1c0; font-size: 10px; line-height: 1.7; padding: 15px 10px 2px;
+      border-top: 1px solid #ffffff20;
+    }
+    main { min-width: 0; }
+    header {
+      height: 74px; background: rgba(255,255,255,.94); border-bottom: 1px solid var(--line);
+      display: flex; align-items: center; justify-content: space-between; padding: 0 38px;
+      position: sticky; top: 0; z-index: 5; backdrop-filter: blur(12px);
+    }
+    header h1 { font-size: 15px; margin: 0; color: var(--navy); font-weight: 700; }
+    header p { margin: 4px 0 0; color: var(--muted); font-size: 11px; }
+    .user-pill {
+      background: #eff4f4; color: #416776; padding: 8px 12px; border-radius: 7px;
+      font-size: 10px; font-weight: 800; letter-spacing: .7px;
+    }
+    .content { padding: 31px 38px 55px; max-width: 1530px; margin: auto; }
+    .page { display: none; }
+    .page.active { display: block; animation: page-in .22s ease-out; }
+    @keyframes page-in { from { opacity: .6; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+    .page-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; margin-bottom: 23px; }
+    .page-head h2 { margin: 0; color: var(--navy); font-size: 21px; letter-spacing: -.35px; }
+    .page-head p { margin: 7px 0 0; color: var(--muted); font-size: 12px; }
+    .dashboard-hero {
+      position: relative; overflow: hidden; min-height: 174px; padding: 28px 30px; border-radius: 13px;
+      align-items: center; background: linear-gradient(112deg, #102b46 0%, #174d64 70%, #1a6875 100%);
+      box-shadow: 0 13px 32px rgba(16, 43, 70, .12);
+    }
+    .dashboard-hero:after {
+      content: ""; position: absolute; width: 280px; height: 280px; border: 1px solid #ffffff16;
+      border-radius: 50%; right: 9%; top: -150px; box-shadow: 0 0 0 30px #ffffff08, 0 0 0 60px #ffffff06;
+    }
+    .dashboard-hero > div, .dashboard-hero > button { position: relative; z-index: 1; }
+    .dashboard-hero .eyebrow { color: #b7d8d6; font-size: 9px; font-weight: 800; letter-spacing: 1.4px; }
+    .dashboard-hero h2 { color: #fff; font-size: 23px; margin-top: 10px; }
+    .dashboard-hero p { color: #d0e0e5; margin-top: 8px; font-size: 12px; }
+    .dashboard-hero .btn-primary { background: #e7a24b; color: #172f42; box-shadow: 0 5px 14px #06192d33; }
+    .dashboard-hero .btn-primary:hover { background: #f0b462; }
+    .btn {
+      border: 0; border-radius: 7px; padding: 10px 14px; font-weight: 700; font-size: 11px;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: .18s ease;
+    }
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-primary:hover { background: #12576f; transform: translateY(-1px); }
+    .btn-light { background: #fff; color: var(--navy); border: 1px solid var(--line); }
+    .btn-light:hover { background: #f4f8f8; border-color: #c8d6dc; }
+    .btn-danger { background: #fff0f0; color: var(--red); border: 1px solid #f2d2d2; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 22px; }
+    .stat {
+      background: #fff; border: 1px solid var(--line); border-radius: 11px; padding: 18px 19px;
+      box-shadow: var(--shadow); min-height: 112px;
+    }
+    .stat-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .stat span { font-size: 11px; color: var(--muted); font-weight: 600; }
+    .stat .stat-icon {
+      width: 31px; height: 31px; border-radius: 9px; display: grid; place-items: center;
+      background: #edf5f4; color: var(--blue); font-size: 14px;
+    }
+    .stat strong { display: block; font-size: 25px; color: var(--navy); margin-top: 10px; letter-spacing: -.6px; }
+    .panel { background: #fff; border: 1px solid var(--line); border-radius: 11px; box-shadow: var(--shadow); margin-bottom: 17px; overflow: hidden; }
+    .panel-title { padding: 16px 19px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .panel-title h3 { font-size: 13px; color: var(--navy); margin: 0; font-weight: 750; }
+    .panel-body { padding: 20px; }
+    .form-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 17px; }
+    .field { display: flex; flex-direction: column; gap: 7px; }
+    .field label { font-size: 11px; font-weight: 700; color: #526477; }
+    .field input, .field select, .field textarea, .search {
+      border: 1px solid #d6dfe4; border-radius: 7px; padding: 10px 11px; background: #fff;
+      color: var(--ink); outline: none; width: 100%; font-size: 12px; transition: border-color .15s, box-shadow .15s;
+    }
+    .field input, .field select { min-height: 39px; }
+    .field input:focus, .field select:focus, .field textarea:focus, .search:focus {
+      border-color: var(--blue2); box-shadow: 0 0 0 3px #2592a51c;
+    }
+    .field textarea { min-height: 76px; resize: vertical; }
+    .section-label { font-size: 12px; font-weight: 800; color: var(--blue); margin: 0 0 11px; }
+    .spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .spec-card { border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+    .spec-card h4 { margin: 0; background: #edf4f4; color: #315867; padding: 11px 13px; font-size: 11px; letter-spacing: .4px; }
+    .spec-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    .spec-table th { background: #f5f8f9; color: #526477; text-align: left; font-weight: 700; }
+    .spec-table th, .spec-table td { border: 1px solid #e5eaed; padding: 8px; }
+    .spec-table input { width: 100%; border: 0; outline: 0; background: transparent; font-size: 11px; min-width: 0; color: var(--ink); }
+    .spec-table input:focus { box-shadow: inset 0 -1px var(--blue2); }
+    .spec-table .qty { width: 75px; }
+    .table-actions { padding: 9px 10px; display: flex; justify-content: flex-end; }
+    .text-btn { border: 0; background: transparent; color: var(--blue); font-weight: 700; font-size: 11px; padding: 5px 7px; }
+    .text-btn:hover { color: #0d4c61; text-decoration: underline; }
+    .full { grid-column: 1 / -1; }
+    .toolbar { display: flex; gap: 9px; align-items: center; flex-wrap: wrap; }
+    .panel-title .toolbar { flex-wrap: nowrap; }
+    .toolbar .search { width: 235px; max-width: 100%; min-height: 36px; }
+    .list-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    .list-table th { background: #f7f9fa; color: #73818c; text-align: left; font-size: 9px; text-transform: uppercase; letter-spacing: .7px; }
+    .list-table th, .list-table td { padding: 13px 16px; border-bottom: 1px solid #edf0f2; }
+    .list-table td { color: #536370; }
+    .list-table td strong { color: var(--navy); }
+    .list-table tbody tr:hover { background: #fbfcfc; }
+    .list-table tr:last-child td { border-bottom: 0; }
+    .status { display: inline-block; padding: 5px 9px; border-radius: 20px; background: #eaf5f0; color: var(--green); font-size: 9px; font-weight: 800; }
+    .empty { text-align: center; color: var(--muted); padding: 38px 15px; font-size: 12px; }
+    .muted { color: var(--muted); font-size: 10px; line-height: 1.5; }
+    .form-footer { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 18px; }
+    .form-footer .right { display: flex; gap: 9px; }
+    .drawing-box { border: 1.5px dashed #bfd0d7; border-radius: 9px; background: #f8fbfb; min-height: 130px; display: grid; place-items: center; text-align: center; color: #778d98; font-size: 11px; padding: 18px; }
+    .drawing-box input { max-width: 240px; margin-top: 12px; font-size: 10px; }
+    .drawing-preview { max-width: 100%; max-height: 260px; object-fit: contain; display: none; margin: 0 auto 10px; }
+    .print-sheet { max-width: 1080px; margin: 0 auto; padding: 40px 48px; border-top: 4px solid var(--blue); }
+    .document-header { border-bottom: 1px solid var(--line); padding-bottom: 24px; }
+    .document-brand { display: flex; align-items: center; gap: 12px; }
+    .document-mark { width: 42px; height: 42px; border-radius: 10px; display: grid; place-items: center; background: var(--navy); color: #fff; font-size: 13px; font-weight: 900; letter-spacing: -.5px; }
+    .document-company strong { display: block; color: var(--navy); font-size: 12px; letter-spacing: .45px; }
+    .document-company span { display: block; margin-top: 5px; color: var(--muted); font-size: 9px; letter-spacing: 1px; }
+    .document-title { padding-top: 27px; }
+    .document-title .document-kicker { color: var(--blue); font-size: 9px; font-weight: 800; letter-spacing: 1.2px; margin: 0 0 8px; }
+    .document-title h1 { margin: 0; color: var(--navy); font-size: 25px; letter-spacing: .2px; }
+    .document-title p:last-child { margin: 8px 0 0; color: var(--muted); font-size: 11px; }
+    .document-section { margin-top: 25px; }
+    .document-section-heading { display: flex; align-items: center; gap: 11px; margin-bottom: 13px; }
+    .section-number { width: 28px; height: 28px; flex: 0 0 28px; display: grid; place-items: center; border-radius: 8px; background: var(--pale); color: var(--blue); font-size: 10px; font-weight: 800; }
+    .document-section-heading h3 { margin: 0; color: var(--navy); font-size: 13px; letter-spacing: .1px; }
+    .document-section-heading p { margin: 4px 0 0; color: var(--muted); font-size: 10px; }
+    .identity-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+    .identity-item { min-height: 64px; padding: 12px 13px; border: 1px solid var(--line); border-radius: 7px; background: #fafcfc; }
+    .identity-item span { display: block; color: var(--muted); font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .45px; }
+    .identity-item strong { display: block; margin-top: 7px; color: var(--ink); font-size: 11px; font-weight: 700; overflow-wrap: anywhere; }
+    .drawing-placeholder { min-height: 145px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; border: 1px dashed #cbd7dc; border-radius: 8px; background: #fafcfc; color: var(--muted); text-align: center; }
+    .drawing-placeholder span { color: #93aab3; font-size: 23px; }
+    .drawing-placeholder strong { color: #506673; font-size: 11px; }
+    .drawing-placeholder small { font-size: 10px; }
+    .document-drawing { display: block; width: 100%; max-height: 350px; object-fit: contain; border: 1px solid var(--line); border-radius: 8px; background: #fafcfc; padding: 10px; }
+    .document-spec-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .document-spec-card { border-radius: 8px; }
+    .document-spec-card h4 { background: var(--navy); color: #fff; padding: 10px 13px; font-size: 10px; letter-spacing: .7px; }
+    .document-table { font-size: 10px; }
+    .document-table th { background: #edf3f4; color: #365766; font-size: 9px; text-transform: uppercase; letter-spacing: .4px; }
+    .document-table th, .document-table td { padding: 8px 10px; vertical-align: top; }
+    .document-table td:last-child, .document-table th:last-child { width: 90px; white-space: nowrap; }
+    .document-table tbody tr:nth-child(even) { background: #fafcfc; }
+    .additional-table { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+    .document-notes { min-height: 60px; padding: 13px 15px; border-left: 3px solid var(--amber); border-radius: 0 7px 7px 0; background: #faf8f3; color: #485864; font-size: 11px; line-height: 1.7; white-space: pre-wrap; }
+    .approval-block { width: 230px; margin: 35px 0 0 auto; text-align: center; color: #536370; font-size: 10px; }
+    .approval-line { height: 68px; border-bottom: 1px solid #71808a; margin-bottom: 8px; }
+    .approval-role { color: var(--muted); margin-top: 4px; font-size: 9px; }
+    .toast { position: fixed; right: 22px; bottom: 22px; background: var(--navy); color: #fff; padding: 12px 17px; border-radius: 8px; box-shadow: var(--shadow); font-size: 12px; display: none; z-index: 10; }
+    @media (max-width: 900px) {
+      .app { grid-template-columns: 1fr; }
+      aside { position: static; height: auto; padding: 13px 16px; gap: 12px; }
+      .brand { padding: 0 5px 11px; }
+      .brand-mark { width: 36px; height: 36px; border-radius: 10px; }
+      nav { grid-template-columns: repeat(3, 1fr); }
+      .nav-btn { justify-content: center; padding: 10px 8px; }
+      .nav-btn.active { box-shadow: inset 0 -2px var(--amber); }
+      .side-note { display: none; }
+      header { height: 62px; padding: 0 20px; }
+      .content { padding: 23px 20px 40px; }
+      .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 600px) {
+      .stats { grid-template-columns: 1fr; gap: 10px; }
+      .stat { min-height: 95px; }
+      .form-grid, .spec-grid { grid-template-columns: 1fr; }
+      .page-head { flex-direction: column; }
+      .dashboard-hero { padding: 23px 20px; }
+      .dashboard-hero h2 { font-size: 20px; }
+      .list-table { min-width: 650px; }
+      .table-wrap { overflow-x: auto; }
+      .form-footer { align-items: flex-start; flex-direction: column; }
+      .form-footer .right { width: 100%; }
+      .form-footer .btn { flex: 1; }
+      .panel-title { align-items: flex-start; flex-wrap: wrap; }
+      .panel-title .toolbar { flex-wrap: wrap; width: 100%; }
+      .panel-title .toolbar .search { width: 100%; }
+      .print-sheet { padding: 24px 18px; }
+      .identity-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .document-title h1 { font-size: 21px; }
+    }
+    @media print {
+      @page { size: A4; margin: 14mm; }
+      aside, header, .no-print, .page-head, .toast { display: none !important; }
+      .app { display: block; }
+      .content { padding: 0; max-width: none; }
+      .page { display: none !important; }
+      #previewPage { display: block !important; }
+      .panel { box-shadow: none; }
+      .print-sheet { max-width: none; margin: 0; padding: 0; border: 0; border-radius: 0; overflow: visible; color: #111; }
+      .document-section { break-inside: avoid; }
+      .document-section.specification-section { break-inside: auto; }
+      .document-spec-card { break-inside: avoid; }
+      .document-header, .document-mark, .document-spec-card h4, .document-table th, .identity-item, .document-notes {
+        print-color-adjust: exact; -webkit-print-color-adjust: exact;
+      }
+      .document-title h1 { font-size: 21px; }
+      .document-table th, .document-table td { border: 1px solid #d5dde1; padding: 6px 8px; }
+      .document-drawing { max-height: 270px; }
+      .drawing-placeholder { min-height: 100px; }
+      .approval-block { margin-top: 24px; }
+    }
   </style>
 </head>
 <body>
@@ -103,11 +270,11 @@
 
     <div class="content">
       <section class="page active" id="dashboardPage">
-        <div class="page-head"><div><h2>Dashboard</h2><p>Ringkasan dokumen SPK yang telah dibuat.</p></div><button class="btn btn-primary" onclick="showPage('creator')">＋ Buat SPK Baru</button></div>
+        <div class="page-head dashboard-hero"><div><span class="eyebrow">OVERVIEW · DIVISI BUS</span><h2>Selamat datang di Master SPK</h2><p>Pantau dan kelola dokumen perintah kerja produksi dalam satu tempat.</p></div><button class="btn btn-primary" onclick="showPage('creator')">＋ Buat SPK Baru</button></div>
         <div class="stats">
-          <div class="stat"><span>Total SPK Tersimpan</span><strong id="totalCount">0</strong></div>
-          <div class="stat"><span>SPK Bulan Ini</span><strong id="monthCount">0</strong></div>
-          <div class="stat"><span>SPK Terakhir Dibuat</span><strong id="lastDate">-</strong></div>
+          <div class="stat"><div class="stat-top"><span>Total SPK Tersimpan</span><span class="stat-icon" aria-hidden="true">▤</span></div><strong id="totalCount">0</strong></div>
+          <div class="stat"><div class="stat-top"><span>SPK Bulan Ini</span><span class="stat-icon" aria-hidden="true">◷</span></div><strong id="monthCount">0</strong></div>
+          <div class="stat"><div class="stat-top"><span>SPK Terakhir Dibuat</span><span class="stat-icon" aria-hidden="true">↗</span></div><strong id="lastDate">-</strong></div>
         </div>
         <div class="panel">
           <div class="panel-title"><h3>SPK Terbaru</h3><button class="text-btn" onclick="showPage('list')">Lihat semua →</button></div>
@@ -250,8 +417,38 @@ document.getElementById('searchInput').addEventListener('input',e=>{
 });
 function previewSPK(id){
  const x=getData().find(a=>a.id===id);if(!x)return;
- const groupHtml=x.groups.map(g=>`<div class="spec-card"><h4>${escapeHtml(g.title)}</h4><table class="spec-table"><thead><tr><th>Item Pekerjaan</th><th>Spesifikasi</th><th>Qty</th></tr></thead><tbody>${g.items.map(a=>`<tr><td>${escapeHtml(a[0])}</td><td>${escapeHtml(a[1])}</td><td>${escapeHtml(a[2])}</td></tr>`).join('')}</tbody></table></div>`).join('');
- document.getElementById('previewContent').innerHTML=`<h1>SURAT PERINTAH KERJA (SPK)</h1><p style="text-align:center">PT MASTER ARTHA KHARISMA — DIVISI BUS</p><p style="text-align:center"><strong>No. SPK: ${escapeHtml(x.spkNo||'-')}</strong></p><hr><h3>IDENTITAS UNIT</h3><table class="list-table"><tbody><tr><th>Nama Customer</th><td>${escapeHtml(x.customer)}</td><th>Jenis Unit</th><td>${escapeHtml(x.unitType)}</td></tr><tr><th>Kapasitas</th><td>${escapeHtml(x.capacity||'-')}</td><th>No. Chassis</th><td>${escapeHtml(x.chassis||'-')}</td></tr><tr><th>No. SO</th><td>${escapeHtml(x.so||'-')}</td><th>Tanggal Masuk</th><td>${formatDate(x.entryDate)}</td></tr></tbody></table><h3>GAMBAR TEKNIK / LAYOUT UNIT</h3>${x.drawing?`<img src="${x.drawing}" style="width:100%;max-height:240px;object-fit:contain">`:'<div class="drawing-box">Gambar teknik / layout unit</div>'}<h3>SPESIFIKASI DETAIL PEKERJAAN</h3><div class="spec-grid">${groupHtml}</div>${x.additional.length?`<h3>SPESIFIKASI TAMBAHAN</h3><table class="spec-table"><thead><tr><th>Item Pekerjaan</th><th>Spesifikasi</th><th>Qty</th></tr></thead><tbody>${x.additional.map(a=>`<tr><td>${escapeHtml(a[0])}</td><td>${escapeHtml(a[1])}</td><td>${escapeHtml(a[2])}</td></tr>`).join('')}</tbody></table>`:''}<h3>CATATAN / INSTRUKSI KHUSUS</h3><p>${escapeHtml(x.notes||'-')}</p><br><div style="text-align:right;margin-top:35px">Disetujui oleh,<br><br><br>( ........................................ )</div>`;
+ const groupHtml=x.groups.map(g=>`<div class="spec-card document-spec-card"><h4>${escapeHtml(g.title)}</h4><table class="spec-table document-table"><thead><tr><th>Item Pekerjaan</th><th>Spesifikasi</th><th>Qty</th></tr></thead><tbody>${g.items.map(a=>`<tr><td>${escapeHtml(a[0])}</td><td>${escapeHtml(a[1])}</td><td>${escapeHtml(a[2])}</td></tr>`).join('')}</tbody></table></div>`).join('');
+ const additionalHtml=x.additional.length?`<div class="spec-card document-spec-card"><h4>SPESIFIKASI TAMBAHAN</h4><table class="spec-table document-table"><thead><tr><th>Item Pekerjaan</th><th>Spesifikasi</th><th>Qty</th></tr></thead><tbody>${x.additional.map(a=>`<tr><td>${escapeHtml(a[0])}</td><td>${escapeHtml(a[1])}</td><td>${escapeHtml(a[2])}</td></tr>`).join('')}</tbody></table></div>`:'';
+ const drawingHtml=x.drawing?`<img class="document-drawing" src="${x.drawing}" alt="Gambar teknik atau layout unit">`:'<div class="drawing-placeholder"><span aria-hidden="true">▧</span><strong>Belum ada gambar teknik</strong><small>Gambar teknik / layout belum dilampirkan.</small></div>';
+ document.getElementById('previewContent').innerHTML=`
+  <div class="document-header">
+    <div class="document-brand"><div class="document-mark">MAK</div><div class="document-company"><strong>PT MASTER ARTHA KHARISMA</strong><span>BODY MANUFACTURING · DIVISI BUS</span></div></div>
+    <div class="document-title"><p class="document-kicker">DOKUMEN PRODUKSI</p><h1>SURAT PERINTAH KERJA</h1><p>Instruksi spesifikasi dan pelaksanaan pekerjaan unit</p></div>
+  </div>
+  <section class="document-section">
+    <div class="document-section-heading"><span class="section-number">01</span><div><h3>Identitas Unit</h3><p>Informasi customer dan unit produksi</p></div></div>
+    <div class="identity-grid">
+      <div class="identity-item"><span>Nama Customer</span><strong>${escapeHtml(x.customer)}</strong></div>
+      <div class="identity-item"><span>Jenis Unit</span><strong>${escapeHtml(x.unitType)}</strong></div>
+      <div class="identity-item"><span>Kapasitas</span><strong>${escapeHtml(x.capacity||'-')}</strong></div>
+      <div class="identity-item"><span>No. Chassis</span><strong>${escapeHtml(x.chassis||'-')}</strong></div>
+      <div class="identity-item"><span>No. SO</span><strong>${escapeHtml(x.so||'-')}</strong></div>
+      <div class="identity-item"><span>Tanggal Masuk</span><strong>${formatDate(x.entryDate)}</strong></div>
+    </div>
+  </section>
+  <section class="document-section">
+    <div class="document-section-heading"><span class="section-number">02</span><div><h3>Gambar Teknik / Layout Unit</h3><p>Referensi visual untuk pelaksanaan produksi</p></div></div>
+    ${drawingHtml}
+  </section>
+  <section class="document-section specification-section">
+    <div class="document-section-heading"><span class="section-number">03</span><div><h3>Spesifikasi Detail Pekerjaan</h3><p>Rincian kebutuhan pekerjaan dan kuantitas</p></div></div>
+    <div class="document-spec-grid">${groupHtml}${additionalHtml}</div>
+  </section>
+  <section class="document-section">
+    <div class="document-section-heading"><span class="section-number">04</span><div><h3>Catatan / Instruksi Khusus</h3><p>Informasi tambahan untuk tim produksi</p></div></div>
+    <div class="document-notes">${escapeHtml(x.notes||'Tidak ada catatan khusus.')}</div>
+  </section>
+  <div class="approval-block"><div>Disetujui oleh,</div><div class="approval-line"></div><strong>Penanggung Jawab</strong><div class="approval-role">Divisi Produksi</div></div>`;
  showPage('preview');
 }
 function exportData(){const blob=new Blob([JSON.stringify(getData(),null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='master-spk-data.json';a.click();URL.revokeObjectURL(url)}
