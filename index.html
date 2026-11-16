@@ -342,7 +342,7 @@
             <div class="panel-title"><h3>Catatan / Instruksi Khusus</h3></div>
             <div class="panel-body"><div class="field"><label>Catatan untuk Produksi</label><textarea id="notes" placeholder="Tuliskan instruksi khusus, catatan Engineering, atau hal yang perlu diperhatikan produksi..."></textarea></div></div>
           </div>
-          <div class="form-footer no-print"><span class="muted">* Wajib diisi. Data awal disimpan pada browser perangkat ini (localStorage).</span><div class="right"><button type="button" class="btn btn-light" onclick="resetForm()">Reset Form</button><button type="submit" class="btn btn-primary">Simpan SPK</button></div></div>
+          <div class="form-footer no-print"><span class="muted">* Wajib diisi. SPK disimpan ke database Firebase.</span><div class="right"><button type="button" class="btn btn-light" onclick="resetForm()">Reset Form</button><button type="submit" class="btn btn-primary">Simpan SPK</button></div></div>
         </form>
       </section>
 
@@ -365,7 +365,6 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const STORAGE_KEY='master_spk_creator_v1';
 const specGroups=[
  {title:'EXTERIOR / BODY',icon:'▣',items:[
   ['Rangka / Body','Pipa Baja / Plat Galvanil','1 set'],['Lantai','Plat 2 mm','1 set'],['Pintu Penumpang','2 pintu penumpang','2 pcs'],['Pintu Darurat','1 pintu darurat di sisi kanan','1 pcs'],['Pintu Sopir','Orisinil chassis','-'],['Peredam Body','Polyurethane (PU)','1 set'],['Lampu Depan','Original chassis','-'],['Lampu Belakang','Standart karoseri','1 set'],['Kaca Depan','Orisinil chassis','-'],['Kaca Samping','Bawah blok mati, atas geser, warna dark grey','1 set'],['Bagasi Samping','Ada','1 set'],['Topi Cabin','Ada','1 pcs'],['Pengecatan','Cat solid / logo letter sesuai permintaan','1 set']]},
@@ -373,17 +372,29 @@ const specGroups=[
   ['Bangku Depan','Orisinil chassis + Asisten Driver','1 set'],['Bangku Penumpang','60 seat, cover Oscar','60 pcs'],['Safety Belt','Sabuk keselamatan 2 titik','60 set'],['Karpet Lantai','Bordes Aluminium','1 set'],['Plafon','ABS polos','1 set'],['Ducting AC','Plat cover vinyl','1 set'],['Lampu Plafon','LED','1 set'],['Dek Pintu & Interior','ABS kombinasi vinyl','1 set'],['Warna Interior','Abu-abu / krem','1 set'],['Pegangan Stainless','1 lajur di plafon','1 lajur'],['Handgrip','Ada','1 set'],['Jam Digital','Ada','1 pcs'],['Lampu Rotary Bulat','2 pcs','2 pcs'],['Emergency Exit + Fan','2 pcs','2 pcs'],['Audio','Tape orisinil + speaker','1 set'],['Louvre AC','Standart karoseri','1 set'],['AC','Denso LD 9','1 set'],['APAR','APAR 6 Kg','1 pcs'],['Radio Rig','Radio Rig','1 pcs']]},
  {title:'ELEKTRIK',icon:'ϟ',items:[['Elektrikal Audio','Pemasangan kembali elektrikal audio bawaan unit','1 set']]}
 ];
-let drawingData='';
+let drawingData='',spkData=[];
 function escapeHtml(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function getData(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]')}catch(e){return []}}
-function setData(data){localStorage.setItem(STORAGE_KEY,JSON.stringify(data))}
+async function apiRequest(path,options={}){
+ let response;
+ try{response=await fetch(path,options)}catch(error){throw new Error('Backend tidak terhubung. Jalankan server dengan npm start dan buka http://localhost:3000.')}
+ const result=await response.json();
+ if(!response.ok)throw new Error(result.error||`Permintaan gagal (${response.status}).`);
+ return result;
+}
+window.spkDatabase={
+ list:()=>apiRequest('/api/spk'),
+ get:id=>apiRequest(`/api/spk/${encodeURIComponent(id)}`),
+ create:record=>apiRequest('/api/spk',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(record)}),
+ remove:id=>apiRequest(`/api/spk/${encodeURIComponent(id)}`,{method:'DELETE'})
+};
+function reportApiError(action,error){console.error(action,error);notify(`${action}: ${error.message}`)}
 function showPage(name){
  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
  document.getElementById(name+'Page').classList.add('active');
  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.page===name));
  const titles={dashboard:'Dashboard',creator:'SPK Creator',list:'Daftar SPK',preview:'Preview SPK'};
  document.getElementById('topTitle').textContent=titles[name]||'Master SPK Creator';
- if(name==='dashboard'||name==='list')renderLists();
+ if(name==='dashboard'||name==='list')refreshLists().catch(error=>reportApiError('Gagal memuat data SPK',error));
 }
 document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
 function renderSpecTables(){
@@ -415,35 +426,46 @@ function readSpecs(){
 function readAdditional(){return [...document.querySelectorAll('#additionalRows tr')].map(r=>[r.cells[1].querySelector('input').value,r.cells[2].querySelector('input').value,r.cells[3].querySelector('input').value]).filter(a=>a.some(Boolean))}
 document.getElementById('drawingFile').addEventListener('change',e=>{
  const file=e.target.files[0];if(!file)return;
- if(file.size>2*1024*1024){notify('Ukuran gambar maksimal 2 MB untuk penyimpanan browser.');e.target.value='';return}
+ if(file.size>2*1024*1024){notify('Ukuran gambar maksimal 2 MB.');e.target.value='';return}
+ if(!['image/jpeg','image/png','image/webp'].includes(file.type)){notify('Gambar harus berformat JPG, PNG, atau WebP.');e.target.value='';return}
  const reader=new FileReader();reader.onload=()=>{drawingData=reader.result;const img=document.getElementById('drawingPreview');img.src=drawingData;img.style.display='block';document.getElementById('drawingHint').style.display='none'};reader.readAsDataURL(file);
 });
-document.getElementById('spkForm').addEventListener('submit',e=>{
+document.getElementById('spkForm').addEventListener('submit',async e=>{
  e.preventDefault();
- const nextNo=getData().length+1;const spkNo='SPK/MAK/'+new Date().getFullYear()+'/'+String(nextNo).padStart(3,'0');
- const data={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),spkNo,customer:val('customer'),unitType:val('unitType'),capacity:val('capacity'),chassis:val('chassis'),so:val('so'),entryDate:val('entryDate'),drawing:drawingData,groups:readSpecs(),additional:readAdditional(),notes:val('notes'),createdAt:new Date().toISOString()};
- const all=getData();all.unshift(data);setData(all);notify('SPK berhasil disimpan.');resetForm();renderLists();showPage('list');
+ const data={customer:val('customer'),unitType:val('unitType'),capacity:val('capacity'),chassis:val('chassis'),so:val('so'),entryDate:val('entryDate'),drawing:drawingData,groups:readSpecs(),additional:readAdditional(),notes:val('notes')};
+ try{await window.spkDatabase.create(data);notify('SPK berhasil disimpan ke Firebase.');resetForm();showPage('list')}
+ catch(error){reportApiError('Gagal menyimpan SPK',error)}
 });
 function val(id){return document.getElementById(id).value.trim()}
 function resetForm(){document.getElementById('spkForm').reset();drawingData='';document.getElementById('drawingPreview').style.display='none';document.getElementById('drawingHint').style.display='block';document.getElementById('additionalRows').innerHTML='';addAdditionalRow();renderSpecTables()}
 function renderLists(){
- const data=getData(),month=new Date().toISOString().slice(0,7);
+ const data=spkData,month=new Date().toISOString().slice(0,7);
  document.getElementById('totalCount').textContent=data.length;
  document.getElementById('monthCount').textContent=data.filter(x=>(x.createdAt||'').slice(0,7)===month).length;
- document.getElementById('lastDate').textContent=data[0]?formatDate(data[0].createdAt.slice(0,10)):'-';
+ document.getElementById('lastDate').textContent=data[0]?formatDate((data[0].createdAt||'').slice(0,10)):'-';
  const recent=document.getElementById('recentRows'),all=document.getElementById('allRows');
- recent.innerHTML=data.slice(0,5).map(row=>rowHtml(row,false)).join('');all.innerHTML=data.map(row=>rowHtml(row,true)).join('');
+ recent.innerHTML=data.slice(0,5).map(row=>rowHtml(row,false)).join('');
+ const query=document.getElementById('searchInput').value.toLowerCase();
+ const filtered=data.filter(x=>[x.customer,x.unitType,x.so,x.chassis].join(' ').toLowerCase().includes(query));
+ all.innerHTML=filtered.map(row=>rowHtml(row,true)).join('');
  document.getElementById('recentEmpty').style.display=data.length?'none':'block';document.getElementById('listEmpty').style.display=data.length?'none':'block';
 }
-function rowHtml(x,full){return `<tr>${full?`<td>${escapeHtml(x.spkNo||'-')}</td>`:''}<td><strong>${escapeHtml(x.customer)}</strong></td><td>${escapeHtml(x.unitType)}</td>${full?`<td>${escapeHtml(x.so||'-')}</td><td>${escapeHtml(x.chassis||'-')}</td>`:''}<td>${formatDate(x.entryDate)}</td>${full?'':'<td><span class="status">Tersimpan</span></td>'}<td><div class="toolbar"><button class="text-btn" onclick="previewSPK('${x.id}')">Lihat</button><button class="text-btn" onclick="deleteSPK('${x.id}')">Hapus</button></div></td></tr>`}
+async function refreshLists(){spkData=await window.spkDatabase.list();renderLists()}
+function rowHtml(x,full){return `<tr>${full?`<td>${escapeHtml(x.spkNo||'-')}</td>`:''}<td><strong>${escapeHtml(x.customer)}</strong></td><td>${escapeHtml(x.unitType)}</td>${full?`<td>${escapeHtml(x.so||'-')}</td><td>${escapeHtml(x.chassis||'-')}</td>`:''}<td>${formatDate(x.entryDate)}</td>${full?'':'<td><span class="status">Tersimpan</span></td>'}<td><div class="toolbar"><button class="text-btn" onclick="previewSPK('${escapeHtml(x.id)}')">Lihat</button><button class="text-btn" onclick="deleteSPK('${escapeHtml(x.id)}')">Hapus</button></div></td></tr>`}
 function formatDate(s){if(!s)return '-';const [y,m,d]=s.split('-');return `${d}/${m}/${y}`}
-function deleteSPK(id){if(!confirm('Hapus SPK ini dari penyimpanan browser?'))return;setData(getData().filter(x=>x.id!==id));renderLists();notify('SPK dihapus.')}
-document.getElementById('searchInput').addEventListener('input',e=>{
- const q=e.target.value.toLowerCase();const data=getData().filter(x=>[x.customer,x.unitType,x.so,x.chassis].join(' ').toLowerCase().includes(q));
- document.getElementById('allRows').innerHTML=data.map(x=>rowHtml(x,true)).join('');document.getElementById('listEmpty').style.display=data.length?'none':'block';
+async function deleteSPK(id){
+ if(!confirm('Hapus SPK ini dari database Firebase?'))return;
+ try{await window.spkDatabase.remove(id);await refreshLists();notify('SPK berhasil dihapus.')}
+ catch(error){reportApiError('Gagal menghapus SPK',error)}
+}
+document.getElementById('searchInput').addEventListener('input',()=>{
+ const query=document.getElementById('searchInput').value.toLowerCase();
+ const data=spkData.filter(x=>[x.customer,x.unitType,x.so,x.chassis].join(' ').toLowerCase().includes(query));
+ document.getElementById('allRows').innerHTML=data.map(x=>rowHtml(x,true)).join('');
+ document.getElementById('listEmpty').style.display=data.length?'none':'block';
 });
 function previewSPK(id){
- const x=getData().find(a=>a.id===id);if(!x)return;
+ const x=spkData.find(a=>a.id===id);if(!x)return;
  const groupHtml=x.groups.map(g=>`<div class="spec-card document-spec-card"><h4>${escapeHtml(g.title)}</h4><table class="spec-table document-table"><thead><tr><th>Item Pekerjaan</th><th>Spesifikasi</th><th>Qty</th></tr></thead><tbody>${g.items.map(a=>`<tr><td>${escapeHtml(a[0])}</td><td>${escapeHtml(a[1])}</td><td>${escapeHtml(a[2])}</td></tr>`).join('')}</tbody></table></div>`).join('');
  const additionalHtml=x.additional.length?`<div class="spec-card document-spec-card"><h4>SPESIFIKASI TAMBAHAN</h4><table class="spec-table document-table"><thead><tr><th>Item Pekerjaan</th><th>Spesifikasi</th><th>Qty</th></tr></thead><tbody>${x.additional.map(a=>`<tr><td>${escapeHtml(a[0])}</td><td>${escapeHtml(a[1])}</td><td>${escapeHtml(a[2])}</td></tr>`).join('')}</tbody></table></div>`:'';
  const drawingHtml=x.drawing?`<img class="document-drawing" src="${x.drawing}" alt="Gambar teknik atau layout unit">`:'<div class="drawing-placeholder"><span aria-hidden="true">▧</span><strong>Belum ada gambar teknik</strong><small>Gambar teknik / layout belum dilampirkan.</small></div>';
@@ -478,10 +500,10 @@ function previewSPK(id){
   <div class="approval-block"><div>Disetujui oleh,</div><div class="approval-line"></div><strong>Penanggung Jawab</strong><div class="approval-role">Divisi Produksi</div></div>`;
  showPage('preview');
 }
-function exportData(){const blob=new Blob([JSON.stringify(getData(),null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='master-spk-data.json';a.click();URL.revokeObjectURL(url)}
+function exportData(){const blob=new Blob([JSON.stringify(spkData,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='master-spk-data.json';a.click();URL.revokeObjectURL(url)}
 function notify(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';setTimeout(()=>t.style.display='none',2600)}
 document.getElementById('entryDate').value=new Date().toISOString().slice(0,10);
-renderSpecTables();addAdditionalRow();renderLists();
+renderSpecTables();addAdditionalRow();refreshLists().catch(error=>reportApiError('Gagal memuat data SPK',error));
 </script>
 </body>
 </html>
