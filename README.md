@@ -6,8 +6,8 @@ The app stores SPK records in Cloud Firestore and drawing files in Firebase Stor
 
 1. Install Node.js 20.6 or newer.
 2. In Firebase Console, enable Cloud Firestore and Cloud Storage for the project.
-3. Create a dedicated service account with the minimum required Firestore and Storage permissions. Download its JSON key and save it outside the repository when possible.
-4. Copy `.env.example` to `.env`. Set `GOOGLE_APPLICATION_CREDENTIALS` to the service-account JSON file path. Do not commit `.env` or the service-account key.
+3. Create a dedicated service account with the minimum required Firestore and Storage permissions. Download its JSON key and save it as `secrets/masterbus-spk-service-account.json` (the `secrets` folder is ignored by Git).
+4. Copy `.env.example` to `.env` if it does not exist. Set `GOOGLE_APPLICATION_CREDENTIALS` to the service-account JSON file path. Do not commit `.env` or the service-account key.
 5. Install dependencies and start the app:
 
    ```powershell
