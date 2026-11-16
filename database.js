@@ -1,12 +1,18 @@
+const fs = require('node:fs');
+const path = require('node:path');
 const { applicationDefault, getApp, getApps, initializeApp } = require('firebase-admin/app');
 const { FieldValue, getFirestore } = require('firebase-admin/firestore');
 const { getStorage } = require('firebase-admin/storage');
 
 const projectId = process.env.FIREBASE_PROJECT_ID;
 const storageBucket = process.env.FIREBASE_STORAGE_BUCKET;
+const credentialPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
 
 if (!projectId || !storageBucket) {
   throw new Error('FIREBASE_PROJECT_ID dan FIREBASE_STORAGE_BUCKET wajib diatur.');
+}
+if (credentialPath && !fs.existsSync(path.resolve(credentialPath))) {
+  throw new Error(`File service account tidak ditemukan di ${path.resolve(credentialPath)}.`);
 }
 
 const firebaseApp = getApps().length
